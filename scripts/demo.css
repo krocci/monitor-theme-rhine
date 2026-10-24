@@ -1,0 +1,58 @@
+.rhine-demo-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px 24px;
+  padding: 10px max(20px, calc((100vw - 1440px) / 2 + 32px));
+  border-bottom: 1px solid #b4aa9a;
+  background: repeating-linear-gradient(135deg, #dcd5c622 0 1px, transparent 1px 7px), #ede7da;
+  color: #3c3c32;
+  font: 12px/1.6 "Courier New", "Noto Serif SC", serif;
+}
+.rhine-demo-banner strong {
+  margin-right: 12px;
+  color: #8e4d2b;
+  font-weight: 700;
+  letter-spacing: .12em;
+}
+.rhine-demo-banner nav {
+  display: flex;
+  gap: 20px;
+}
+.rhine-demo-banner a,
+.rhine-demo-admin a {
+  color: #754026;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.rhine-demo-banner a:focus-visible,
+.rhine-demo-admin a:focus-visible {
+  outline: 2px solid #8e4d2b;
+  outline-offset: 5px;
+}
+.rhine-demo-admin {
+  margin: 0;
+  background: #e9e6df;
+  color: #24251f;
+  font: 16px/1.8 Georgia, "Noto Serif SC", serif;
+}
+.rhine-demo-admin main {
+  max-width: 48rem;
+  margin: 12vh auto;
+  padding: 24px;
+  border-top: 3px solid #8e4d2b;
+}
+.rhine-demo-admin h1 {
+  font-size: clamp(28px, 6vw, 48px);
+  font-weight: 400;
+}
+.rhine-demo-admin nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+}
+@media (max-width: 600px) {
+  .rhine-demo-banner { padding: 10px 16px; }
+  .rhine-demo-banner nav { gap: 16px; }
+}

@@ -1,6 +1,10 @@
 node_modules/
 dist/
 dist-ssr/
+demo-dist/
+.wrangler/
+.dev.vars
+.dev.vars.*
 theme.tar.gz
 theme.tar.gz.sha256
 *.log

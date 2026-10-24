@@ -2,6 +2,8 @@
 
 一套面向 [Monitor](https://github.com/monitor-probe/monitor) 的纸色档案式二维主题。
 
+**[在线演示](https://rhine-observation-demo.yahad.workers.dev)** · 全部节点和曲线均为合成数据，无需登录。演示站保留简报、索引、详情与密集网络历史；[演示部署说明](docs/DEMO.md)介绍本地运行和 Cloudflare Workers 部署方式。
+
 ![使用合成数据的本地预览](preview.png)
 
 ## 特点
