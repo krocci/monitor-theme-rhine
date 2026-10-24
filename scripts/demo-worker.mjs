@@ -40,13 +40,14 @@ function stream(request) {
   }
   const close = (code, reason) => {
     cleanup()
-    if (server.readyState === 1) server.close(code, reason)
+    // A peer can disappear before readyState reflects the failed connection.
+    try { server.close(code, reason) } catch { /* Timers are already cleared. */ }
   }
   const send = () => {
     if (server.readyState !== 1) return cleanup()
     try { server.send(JSON.stringify(snapshot())) } catch { close(1011, "Demo stream ended") }
   }
-  server.addEventListener("close", cleanup)
+  server.addEventListener("close", () => close(1000, "Demo stream closed"))
   server.addEventListener("error", () => close(1011, "Demo stream error"))
   // A demo has no application messages or write operations.
   server.addEventListener("message", () => close(1008, "Demo stream is read-only"))
