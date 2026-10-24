@@ -156,7 +156,7 @@
   --font-data: "Cascadia Mono", "Consolas", monospace;
 }
 
-html { min-width: 320px; scroll-behavior: auto; }
+html { min-width: min(320px, 100%); scroll-behavior: auto; }
 body { margin: 0; font-family: var(--font-body); -webkit-font-smoothing: antialiased; }
 button, a, input, select { -webkit-tap-highlight-color: transparent; }
 button, a, select { touch-action: manipulation; }

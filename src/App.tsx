@@ -7,6 +7,7 @@ import { ArchiveStack, InstrumentPlate, NodeStatus, SnapshotNote, stamp } from "
 import { NodeIndex, type IndexFilters } from "./components/NodeIndex"
 import { useBriefingCarousel } from "./components/useBriefingCarousel"
 import { ROTATION_MS } from "./lib/carousel"
+import { BriefingTrends } from "./components/BriefingTrends"
 
 const NodeHistory = lazy(() => import("./components/NodeDetail").then((module) => ({ default: module.NodeHistory })))
 type Site = { site_name: string; authed: boolean; public_page: boolean; history_days: number }
@@ -90,6 +91,7 @@ function Dashboard({ site, configError, onRevalidate }: { site: Site; configErro
   const [favorites, setFavorites] = useState(() => parseFavorites(readLocal("favorites")))
   const [group, setGroup] = useState<string | null>(null)
   const [filters, setFilters] = useState<IndexFilters>(EMPTY_FILTERS)
+  const [indexEntry, setIndexEntry] = useState(0)
   const [tab, setTab] = useState<DetailTab>("overview")
   const [settings, setSettings] = useState(false)
   const [reduceMotion, setReduceMotion] = useState(() => readLocal("reduceMotion") === "true")
@@ -163,7 +165,9 @@ function Dashboard({ site, configError, onRevalidate }: { site: Site; configErro
       setRoute(readRoute())
     }
   }, [])
-  const openIndex = useCallback(() => {
+  const openIndex = useCallback((status: IndexFilters["status"] = "all") => {
+    setFilters({ ...EMPTY_FILTERS, status })
+    setIndexEntry((entry) => entry + 1)
     if (route.index) return
     navigate(`${location.pathname}?index=1`)
   }, [navigate, route.index])
@@ -252,8 +256,8 @@ function Dashboard({ site, configError, onRevalidate }: { site: Site; configErro
         <span className="brand-subtitle">OBSERVATION <b>OS</b><i aria-hidden="true" /></span>
       </a>
       <nav className="top-nav" aria-label="主导航">
-        <button onClick={openIndex} data-testid="open-index"><Search size={20} /><span>节点索引</span><kbd>/</kbd></button>
-        <button onClick={() => { setFilters({ ...EMPTY_FILTERS, status: "favorites" }); openIndex() }}><Star size={17} /><span>关注</span><b className="tabular">{String(favorites.length).padStart(2, "0")}</b></button>
+        <button onClick={() => openIndex()} data-testid="open-index"><Search size={20} /><span>节点索引</span><kbd>/</kbd></button>
+        <button onClick={() => openIndex("favorites")}><Star size={17} /><span>关注</span><b className="tabular">{String(favorites.length).padStart(2, "0")}</b></button>
         <button onClick={() => setSettings(true)} aria-label="显示设置"><Settings2 size={19} /></button>
         <a href="/admin/" className="admin-link">管理 <ArrowUpRight size={14} /></a>
       </nav>
@@ -261,9 +265,9 @@ function Dashboard({ site, configError, onRevalidate }: { site: Site; configErro
 
     <section className="fleet-bar" aria-label="节点汇总">
       <div className="fleet-counts"><span className="eyebrow">FLEET / {stale ? "上次快照" : "节点概览"}</span><b>{nodes === null ? "--" : nodes.length}<small>节点</small></b>
-        <button onClick={() => { setFilters({ ...EMPTY_FILTERS, status: "online" }); openIndex() }}><i className="status-dot status-online" />在线 {nodes === null ? "--" : counts.online}</button>
-        <button onClick={() => { setFilters({ ...EMPTY_FILTERS, status: "offline" }); openIndex() }}><i className="status-dot status-offline" />离线 {nodes === null ? "--" : counts.offline}</button>
-        {counts.unknown > 0 && <button onClick={() => { setFilters({ ...EMPTY_FILTERS, status: "unknown" }); openIndex() }}>待上报 {counts.unknown}</button>}
+        <button onClick={() => openIndex("online")}><i className="status-dot status-online" />在线 {nodes === null ? "--" : counts.online}</button>
+        <button onClick={() => openIndex("offline")}><i className="status-dot status-offline" />离线 {nodes === null ? "--" : counts.offline}</button>
+        {counts.unknown > 0 && <button onClick={() => openIndex("unknown")}>待上报 {counts.unknown}</button>}
       </div>
       <div className={`connection-state connection-${connection}`} data-testid="connection-status" data-transport={JSON.stringify(diagnostics)} data-received-at={receivedAt ?? ""}><i aria-hidden="true" />{CONNECTION[connection]}<span>{receivedAt ? stamp(receivedAt) : "--"} CST</span></div>
     </section>
@@ -283,11 +287,11 @@ function Dashboard({ site, configError, onRevalidate }: { site: Site; configErro
                 <button className="text-link" onClick={() => void copyName()}>{copyStatus === "已复制" ? <Check size={16} /> : <Copy size={16} />}复制名称</button>
               </div>}
             </div>
-            {!selected ? <div className="empty-state"><h1>节点当前不可用</h1><p>节点可能已删除、被隐藏，或不在当前访问权限范围内。</p><button className="text-link" onClick={openIndex}>查看节点索引 <ArrowRight size={18} /></button></div>
+            {!selected ? <div className="empty-state"><h1>节点当前不可用</h1><p>节点可能已删除、被隐藏，或不在当前访问权限范围内。</p><button className="text-link" onClick={() => openIndex()}>查看节点索引 <ArrowRight size={18} /></button></div>
               : <>
                 <header className="detail-identity">
                   <div className="detail-title">
-                    <div className="file-label"><span className="eyebrow">NODE {String(selected.id).padStart(3, "0")} / {selected.group || "未分组"}</span></div>
+                    <div className="file-label"><span className="eyebrow">NODE FILE / {selected.group || "未分组"}</span></div>
                     <h1 className="node-heading" ref={headingRef} tabIndex={-1}>{selected.name}</h1>
                     <div className="detail-subtitle"><NodeStatus node={selected} stale={stale} /><span>{selected.os || "系统信息待上报"}</span></div>
                   </div>
@@ -327,22 +331,16 @@ function Dashboard({ site, configError, onRevalidate }: { site: Site; configErro
           </article> : <section className="briefing" data-testid="briefing" ref={briefingRef}
             onFocusCapture={carousel.onFocusCapture} onBlurCapture={carousel.onBlurCapture}
             onPointerDownCapture={carousel.onPointerDownCapture}>
-            <ArchiveStack nodes={visibleNodes} selectedId={selectedId} onSelect={(id) => { carousel.cancelWheel(); chooseNode(id) }} wheelOffset={carousel.wheelOffset} wheelActive={carousel.wheelActive} />
+            <ArchiveStack nodes={visibleNodes} selectedId={selectedId} stale={stale} onSelect={(id) => { carousel.cancelWheel(); chooseNode(id) }} wheelOffset={carousel.wheelOffset} wheelActive={carousel.wheelActive} />
             <div className="brief-content">
               <div className="eyebrow">TELEMETRY ARCHIVE <span>/</span> {selected?.group || "未分组"}</div>
-              <div className="brief-file-no">NODE {selected ? String(selected.id).padStart(3, "0") : "---"}</div>
-              {selected ? <div className="brief-data" key={selected.id}>
+              {selected ? <div className="brief-data">
                 <h1 className="node-heading">{selected.name}</h1>
                 <div className="brief-status"><NodeStatus node={selected} stale={stale} /><span>{selected.os || "系统待上报"} {selected.arch}</span></div>
-                <div className="brief-metrics">
-                  <MetricReadout label="CPU / 处理器" value={percentLabel(displayPercent(selected, "cpu"))} />
-                  <MetricReadout label="MEMORY / 内存" value={percentLabel(displayPercent(selected, "mem"))} />
-                  <MetricReadout label="UPLOAD / 上行" value={metric(selected.metrics?.net_tx, rate)} />
-                  <MetricReadout label="DOWNLOAD / 下行" value={metric(selected.metrics?.net_rx, rate)} />
-                </div>
+                <BriefingTrends node={selected} stale={stale} active={!route.index && !settings && !carousel.wheelActive && (connection === "live" || connection === "polling")} />
                 <SnapshotNote node={selected} stale={stale} receivedAt={receivedAt} />
                 <button className="brief-access" data-testid="brief-detail" onClick={() => openNode(selected.id)}><span>查看节点详情 <small>ACCESS NODE FILE</small></span><ArrowRight size={28} /></button>
-              </div> : <div className="brief-data"><h1 className="node-heading">节点当前不可用</h1><p>已停止显示旧指标。请重新选择一个节点。</p><button className="text-link" onClick={openIndex}>打开节点索引 <ArrowRight size={18} /></button></div>}
+              </div> : <div className="brief-data"><h1 className="node-heading">节点当前不可用</h1><p>已停止显示旧指标。请重新选择一个节点。</p><button className="text-link" onClick={() => openIndex()}>打开节点索引 <ArrowRight size={18} /></button></div>}
             </div>
             <div className="archive-navigation">
               {visibleNodes.length > 1 && <>
@@ -362,7 +360,7 @@ function Dashboard({ site, configError, onRevalidate }: { site: Site; configErro
           </section>}
     </main>
     <footer className="site-footer"><span><i aria-hidden="true" />{site.authed ? "已登录访问" : "公开状态页"}</span><span>TIMEZONE / ASIA·SHANGHAI</span><span>POWERED BY <b>MONITOR</b><i className="footer-mark" /></span></footer>
-    <NodeIndex open={route.index} nodes={nodes ?? []} filters={filters} onFilters={setFilters} favorites={favorites} stale={stale} receivedAt={receivedAt} onClose={closeIndex} onOpen={openNode} onFavorite={toggleFavorite} />
+    <NodeIndex open={route.index} entry={indexEntry} nodes={nodes ?? []} filters={filters} onFilters={setFilters} favorites={favorites} stale={stale} receivedAt={receivedAt} onClose={closeIndex} onOpen={openNode} onFavorite={toggleFavorite} />
     <dialog className="settings-dialog" ref={settingsRef} aria-labelledby="settings-heading" onCancel={(event) => { event.preventDefault(); setSettings(false) }}>
       <div className="dialog-heading"><span className="eyebrow">DISPLAY / 本机显示偏好</span><button aria-label="关闭显示设置" onClick={() => setSettings(false)}><X size={21} /></button></div>
       <h2 id="settings-heading">显示设置</h2><label className="motion-option"><input type="checkbox" checked={reduceMotion} onChange={(event) => setReduceMotion(event.target.checked)} /><span>减少动态效果<small>关闭位移与渐入；同时尊重系统的减少动态效果设置。</small></span></label><p>仅影响本浏览器的主题显示。站点名称直接读取 Monitor 的“站点名称”配置。</p><a className="text-link" href="/admin/">前往管理后台 <ArrowUpRight size={16} /></a>

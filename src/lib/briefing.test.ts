@@ -1,0 +1,41 @@
+import assert from "node:assert/strict"
+import { BRIEF_TTL, briefTrace, createBriefCache, readBriefHistory } from "./briefing.ts"
+
+const now = 7_200_000
+const input = (ts: number, cpu: unknown = 10) => ({ ts, cpu, mem_used: 0, net_tx: 0, net_rx: 128 })
+const data = readBriefHistory({ metrics: [
+  input(5000, 25), input(4000, 0), input(4060, null), input(4120, 150),
+  input(5000, 50), input(100, 1), input(8000, 1),
+] }, now)
+assert.deepEqual(data.rows.map((row) => row.ts), [4000, 4060, 4120, 5000])
+assert.deepEqual(data.rows.map((row) => row.cpu), [0, null, 150, 50])
+assert.equal(data.step, 60)
+assert.equal(data.rows[0].mem_used, 0)
+assert.equal(data.from, 3600)
+assert.equal(data.to, 7200)
+assert.throws(() => readBriefHistory({}, now))
+assert.deepEqual(readBriefHistory({ metrics: [null, {}, input(4000, "3")] }, now).rows[0].cpu, null)
+assert.equal(readBriefHistory({ metrics: [], step: 60 }, now).step, 60)
+assert.equal(briefTrace(readBriefHistory({ metrics: [] }, now), "cpu", 100).path, "")
+const trace = briefTrace(data, "cpu", 200)
+assert.equal(trace.path, "", "nulls and missing intervals must not be bridged")
+assert.equal(trace.dots.length, 3, "isolated valid reports, including zero, remain visible")
+assert.equal(trace.dots[0].y, 62)
+const gapData = readBriefHistory({ step: 60, metrics: [input(4000), input(4060), input(5000), input(5060)] }, now)
+const gapTrace = briefTrace(gapData, "cpu", 100)
+assert.equal(gapTrace.path.match(/M/g)?.length, 2)
+assert.equal(gapTrace.path.match(/L/g)?.length, 2)
+assert.equal(gapTrace.dots.length, 0)
+const emptySeries = readBriefHistory({ metrics: [input(4000, NaN), input(4060, -1)] }, now)
+assert.deepEqual(briefTrace(emptySeries, "cpu", 100), { path: "", dots: [] })
+const cache = createBriefCache(2)
+cache.set(1, data, now)
+assert.equal(cache.get(1, now + BRIEF_TTL - 1)?.data, data)
+assert.equal(cache.get(1, now + BRIEF_TTL), undefined)
+cache.set(2, data, now)
+cache.set(3, data, now)
+assert.equal(cache.get(1, now), undefined, "bounded cache drops the oldest node")
+assert.equal(cache.get(2, now)?.data, data)
+cache.clear()
+assert.equal(cache.get(2, now), undefined, "authorization loss can clear every cached snapshot")
+console.log("briefing trends preserve missing data, time windows, isolated samples and cache boundaries")

@@ -1,7 +1,7 @@
 import type { CSSProperties } from "react"
 import type { Node } from "@/lib/api"
 import { archiveCardPose } from "@/lib/carousel"
-import { pair } from "@/lib/format"
+import { pair, rate } from "@/lib/format"
 import { displayPercent, finiteMetric, nodeStatus, percentLabel } from "@/lib/rhine"
 
 const SHANGHAI = new Intl.DateTimeFormat("en-CA", {
@@ -23,7 +23,6 @@ export function stamp(ms: number, full = false): string {
 }
 
 const STATUS = { online: "在线", offline: "离线", unknown: "未上报" }
-const serial = (id: number) => `N-${String(id).padStart(3, "0")}`
 
 export function NodeStatus({ node, stale = false }: { node: Node; stale?: boolean }) {
   const status = nodeStatus(node)
@@ -61,12 +60,13 @@ export function SnapshotNote({ node, stale, receivedAt }: {
   )
 }
 
-export function ArchiveStack({ nodes, selectedId, onSelect, wheelOffset = 0, wheelActive = false }: {
+export function ArchiveStack({ nodes, selectedId, onSelect, wheelOffset = 0, wheelActive = false, stale = false }: {
   nodes: Node[]
   selectedId: number | null
   onSelect: (id: number) => void
   wheelOffset?: number
   wheelActive?: boolean
+  stale?: boolean
 }) {
   const selected = Math.max(0, nodes.findIndex((node) => node.id === selectedId))
   const visible = nodes.map((node, index) => ({
@@ -75,6 +75,7 @@ export function ArchiveStack({ nodes, selectedId, onSelect, wheelOffset = 0, whe
   return (
     <div
       className={`archive-stage${wheelActive ? " is-wheel-moving" : ""}`}
+      style={{ "--sheet-middle": (Math.min(nodes.length, 7) - 1) / 2 } as CSSProperties}
       role="group"
       aria-label="节点档案选择"
       data-wheel-offset={wheelOffset}
@@ -101,21 +102,28 @@ export function ArchiveStack({ nodes, selectedId, onSelect, wheelOffset = 0, whe
               } as CSSProperties}
               onClick={() => onSelect(node.id)}
               aria-pressed={selected}
-              aria-label={`${serial(node.id)} ${node.name}，${STATUS[nodeStatus(node)]}${selected ? "，当前选中" : ""}`}
+              aria-label={`${node.name}，${STATUS[nodeStatus(node)]}${stale ? "，上次快照" : ""}${selected ? "，当前选中" : ""}`}
               title={node.name}
+              data-node-id={node.id}
+              data-stale={stale || nodeStatus(node) !== "online" ? "true" : undefined}
             >
               <span className="sheet-topline">
                 <span>OBSERVATION FILE</span>
                 <span className="sheet-marker" aria-hidden="true" />
               </span>
-              <span className="sheet-id">{serial(node.id)}</span>
-              <span className="sheet-rule" aria-hidden="true" />
               <span className="sheet-name">{node.name}</span>
-              <span className="sheet-group">{node.group || "未分组"}</span>
-              <span className={`sheet-status status-${nodeStatus(node)}`}>
-                <span className="status-dot" aria-hidden="true" />{STATUS[nodeStatus(node)]}
+              <span className="sheet-meta">
+                <span className={`sheet-status status-${nodeStatus(node)}`}>
+                  <span className="status-dot" aria-hidden="true" />{STATUS[nodeStatus(node)]}
+                </span>
+                <span className="sheet-group">{node.group || "未分组"}</span>
               </span>
-              <span className="sheet-footer" aria-hidden="true">MONITOR / NODE RECORD</span>
+              <span className="sheet-rule" aria-hidden="true" />
+              <ResourceSquares node={node} stale={stale} />
+              <span className="sheet-report">
+                <span>{stale ? "上次快照" : nodeStatus(node) === "offline" ? "最后上报" : "最近上报"}</span>
+                <span>{stamp(node.last_seen * 1000)}</span>
+              </span>
             </button>
           )
         })}
@@ -123,6 +131,40 @@ export function ArchiveStack({ nodes, selectedId, onSelect, wheelOffset = 0, whe
       </div>
     </div>
   )
+}
+
+function ResourceSquares({ node, stale }: { node: Node; stale: boolean }) {
+  const readings = [
+    { key: "cpu", label: "CPU", value: displayPercent(node, "cpu"), radius: 75 },
+    { key: "mem", label: "MEM", value: displayPercent(node, "mem"), radius: 58 },
+    { key: "disk", label: "DISK", value: displayPercent(node, "disk"), radius: 41 },
+  ]
+  const status = nodeStatus(node)
+  const live = !stale && status === "online"
+  const label = stale ? "SNAPSHOT" : status === "offline" ? "OFFLINE" : status === "unknown" || !node.metrics ? "NO DATA" : "LIVE"
+  const speed = (input: unknown) => { const value = finiteMetric(input); return value === null ? "--" : rate(value) }
+  return <span className="sheet-resources">
+    <span className="sheet-resource-label">RESOURCE / {live ? "实时资源" : stale ? "上次快照" : status === "offline" ? "最后已知" : "等待数据"}</span>
+    <span className="sheet-orbit" aria-hidden="true">
+      <svg viewBox="0 0 240 164">
+        <path className="square-cross" d="M120 0V164M20 82H220M14 7H24M19 2V12M216 157H226M221 152V162" />
+        {readings.map(({ key, value, radius }) => {
+          const path = `M120 ${82 - radius}L${120 + radius} 82L120 ${82 + radius}L${120 - radius} 82Z`
+          return <g key={key}>
+            <path className="square-track" d={path} />
+            {value !== null && <path className={`square-value square-${key}`} d={path} pathLength={100} strokeDasharray={`${Math.min(100, value)} 100`} />}
+          </g>
+        })}
+      </svg>
+      <span className="sheet-orbit-label"><b>{label}</b><small>CPU / MEM / DISK</small></span>
+    </span>
+    <span className="sheet-resource-values">{readings.map(({ key, label, value }) =>
+      <span key={key}><span className="sheet-resource-key"><i className={`square-key-${key}`} />{label}</span><strong>{percentLabel(value)}</strong></span>)}</span>
+    <span className="sheet-network">
+      <span><small>↑ UP / 上行</small><strong>{speed(node.metrics?.net_tx)}</strong></span>
+      <span><small>↓ DOWN / 下行</small><strong>{speed(node.metrics?.net_rx)}</strong></span>
+    </span>
+  </span>
 }
 
 function InstrumentRing({ size, value, label, caption }: {
@@ -178,7 +220,7 @@ export function InstrumentPlate({ node, compact = false }: { node: Node; compact
   return (
     <section className={`instrument-plate${compact ? " is-compact" : ""}`} aria-label="节点资源仪表">
       <div className="plate-head">
-        <span className="plate-serial">{serial(node.id)}</span>
+        <span className="plate-serial">RESOURCE / 资源</span>
         <span className="plate-kind">RESOURCE OBSERVATION</span>
       </div>
       <div className="plate-rings">

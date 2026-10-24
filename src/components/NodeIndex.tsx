@@ -13,6 +13,7 @@ export type IndexFilters = {
 
 type Props = {
   open: boolean
+  entry: number
   nodes: Node[]
   filters: IndexFilters
   onFilters: (filters: IndexFilters) => void
@@ -43,7 +44,7 @@ const outsideDialog = (dialog: HTMLDialogElement, x: number, y: number) => {
 }
 
 export function NodeIndex({
-  open, nodes, filters, onFilters, favorites, stale, receivedAt, onClose, onOpen, onFavorite,
+  open, entry, nodes, filters, onFilters, favorites, stale, receivedAt, onClose, onOpen, onFavorite,
 }: Props) {
   const dialog = useRef<HTMLDialogElement>(null)
   const search = useRef<HTMLInputElement>(null)
@@ -51,6 +52,7 @@ export function NodeIndex({
   const scrollTop = useRef(0)
   const opener = useRef<HTMLElement | null>(null)
   const backdropPress = useRef(false)
+  const lastEntry = useRef(entry)
   const groupOptions = useMemo(() => {
     const options = groupsOf(nodes)
     if (nodes.some((node) => !node.group)) options.push("")
@@ -75,6 +77,11 @@ export function NodeIndex({
     const panel = dialog.current
     if (!panel) return
     backdropPress.current = false
+    if (lastEntry.current !== entry) {
+      lastEntry.current = entry
+      scrollTop.current = 0
+      if (list.current) list.current.scrollTop = 0
+    }
     if (open && !panel.open) {
       opener.current = document.activeElement instanceof HTMLElement ? document.activeElement : null
       panel.showModal()
@@ -85,7 +92,7 @@ export function NodeIndex({
       panel.close()
       if (opener.current?.isConnected) opener.current.focus({ preventScroll: true })
     }
-  }, [open])
+  }, [open, entry])
 
   const change = (patch: Partial<IndexFilters>) => {
     scrollTop.current = 0
@@ -149,14 +156,14 @@ export function NodeIndex({
           <circle cx="10" cy="10" r="6.5" stroke="currentColor" strokeWidth="1.5" />
           <path d="m15 15 6 6" stroke="currentColor" strokeWidth="1.5" />
         </svg>
-        <span className="sr-only">搜索节点名称、分组或编号</span>
+        <span className="sr-only">搜索节点名称或分组</span>
         <input
           ref={search}
           type="search"
           data-testid="index-search"
           value={filters.query}
           onChange={(event) => change({ query: event.target.value })}
-          placeholder="搜索节点名称、分组或编号"
+          placeholder="搜索节点名称或分组"
           autoComplete="off"
           spellCheck={false}
         />
@@ -228,7 +235,6 @@ export function NodeIndex({
               return (
                 <tr key={node.id} data-node-id={node.id} data-stale={stale || state !== "online" ? "true" : undefined}>
                   <th scope="row" className="rhine-index-node">
-                    <span className="rhine-index-id">N-{String(node.id).padStart(3, "0")}</span>
                     <div>
                       <button type="button" className="rhine-index-name" onClick={() => enter(node.id)}>{node.name}</button>
                       <span className="rhine-index-group">{node.group || "未分组"}</span>

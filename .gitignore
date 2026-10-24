@@ -18,3 +18,6 @@ theme.tar.gz.sha256
 coverage/
 test-results/
 playwright-report/
+
+# Private migration records, deployment evidence and chat attachments.
+/local/
