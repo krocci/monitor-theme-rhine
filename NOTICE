@@ -1,0 +1,14 @@
+Rhine Observation
+
+Based on monitor-probe/monitor-theme-default v1.4.1
+Source commit: 4493b5f3bbfd9ef94675de0b2e11681d865a1428
+The upstream MIT license and copyright are retained in LICENSE.
+
+Designed for Monitor hub v1.5.0.
+Visual direction inspired by LBEILC/RhineLabUI and user-supplied references.
+The reference screenshots, third-party names, logos, fonts, audio and 3D
+assets are not included. No affiliation or endorsement is claimed.
+
+This release contains an independent two-dimensional interface, plus
+adaptations of the default theme's API, formatting and history components.
+No remote fonts, service workers, audio or 3D runtime are used.

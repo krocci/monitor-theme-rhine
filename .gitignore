@@ -1,0 +1,16 @@
+node_modules/
+dist/
+dist-ssr/
+theme.tar.gz
+theme.tar.gz.sha256
+*.log
+*.local
+.env
+.env.*
+!.env.example
+.DS_Store
+.idea/
+.vscode/
+coverage/
+test-results/
+playwright-report/

@@ -1,0 +1,354 @@
+.rhine-history {
+  min-width: 0;
+  width: 100%;
+  color: var(--color-foreground);
+}
+
+.rhine-history-toolbar,
+.rhine-history-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.rhine-history-toolbar {
+  padding: 0.5rem 0;
+  border-top: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.rhine-range {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+}
+
+.rhine-range button,
+.rhine-history-refresh,
+.rhine-history-message button {
+  min-height: 1.9rem;
+  padding: 0.25rem 0.65rem;
+  border: 1px solid var(--color-border);
+  background: transparent;
+  color: inherit;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.rhine-range button.is-active {
+  border-color: var(--color-foreground);
+  background: var(--color-foreground);
+  color: var(--color-background);
+}
+
+.rhine-range button:hover:not(.is-active),
+.rhine-history-refresh:hover,
+.rhine-history-message button:hover {
+  border-color: var(--color-foreground);
+  background: var(--color-muted);
+}
+
+.rhine-history button:focus-visible,
+.rhine-history input:focus-visible,
+.rhine-history select:focus-visible {
+  outline: 2px solid var(--color-chart-1);
+  outline-offset: 3px;
+}
+
+.rhine-history-meta {
+  min-height: 2rem;
+  margin: 0.25rem 0 0.5rem;
+  color: var(--color-muted-foreground);
+  font-size: 0.75rem;
+}
+
+.rhine-history-smooth {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 1.9rem;
+  cursor: pointer;
+}
+
+.rhine-history-smooth input {
+  accent-color: var(--color-chart-1);
+}
+
+.rhine-history-message {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  min-height: 9rem;
+  margin: 0;
+  padding: 1rem;
+  text-align: center;
+  font-size: 0.9rem;
+  line-height: 1.8;
+}
+
+.rhine-history-message.is-error,
+.rhine-probe-loss.has-loss {
+  color: var(--color-destructive);
+}
+
+.rhine-history-panels {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.9rem 1.25rem;
+}
+
+.rhine-history-panel {
+  min-width: 0;
+}
+
+.rhine-history-panel h3 {
+  margin: 0 0 0.25rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+}
+
+.rhine-history-plot {
+  min-width: 0;
+  width: 100%;
+  height: 10.5rem;
+  color: var(--color-muted-foreground);
+}
+
+.rhine-history-plot.is-latency {
+  position: relative;
+  height: clamp(13rem, 27svh, 19rem);
+}
+
+.rhine-network-controls {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+}
+
+.rhine-latency-panel {
+  min-width: 0;
+  border-top: 1px solid var(--color-border);
+  padding-top: 0.4rem;
+}
+
+.rhine-latency-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  min-height: 1.6rem;
+  margin-bottom: 0.35rem;
+}
+
+.rhine-latency-heading h3 {
+  min-width: 0;
+  margin: 0;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.rhine-latency-heading button {
+  min-height: 1.7rem;
+  padding: 0.15rem 0.45rem;
+  border: 1px solid var(--color-border);
+  background: transparent;
+  color: inherit;
+  font-size: 0.75rem;
+  cursor: pointer;
+}
+
+.rhine-latency-heading h3 > span {
+  margin-left: 0.4rem;
+  color: var(--color-muted-foreground);
+  font-size: 0.75rem;
+  font-weight: 400;
+}
+
+.rhine-probe-legend {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+  gap: 0.3rem 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.rhine-probe-toggle {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.45rem;
+  min-width: 0;
+  min-height: 2.65rem;
+  padding: 0.25rem 0.4rem;
+  border: 1px solid transparent;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.rhine-probe-toggle:hover,
+.rhine-probe-toggle:focus-visible,
+.rhine-latency-heading button:hover {
+  border-color: var(--color-border);
+  background: var(--color-muted);
+}
+
+.rhine-probe-toggle.is-hidden {
+  opacity: 0.5;
+}
+
+.rhine-probe-toggle.is-hidden .rhine-probe-name {
+  text-decoration: line-through;
+}
+
+.rhine-probe-swatch {
+  flex: 0 0 1rem;
+  height: 3px;
+  margin-top: 0.5rem;
+}
+
+.rhine-probe-label {
+  min-width: 0;
+  line-height: 1.35;
+}
+
+.rhine-probe-name {
+  display: block;
+  overflow-wrap: anywhere;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.rhine-probe-status {
+  display: block;
+  margin-top: 0.15rem;
+  color: var(--color-muted-foreground);
+  font-size: 0.7rem;
+}
+
+.rhine-probe-loss {
+  color: var(--color-muted-foreground);
+  font-size: 0.7rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.rhine-latency-panel .rhine-history-message {
+  min-height: 0;
+  height: 100%;
+  color: var(--color-muted-foreground);
+}
+
+.rhine-latency-empty {
+  position: absolute;
+  inset: 1.5rem 0 3rem 3.5rem;
+  display: grid;
+  place-content: center;
+  margin: 0;
+  padding: 1rem;
+  color: var(--color-muted-foreground);
+  text-align: center;
+  font-size: 0.85rem;
+  pointer-events: none;
+}
+
+.rhine-history .recharts-cartesian-grid line {
+  stroke: var(--color-border);
+  stroke-opacity: 0.55;
+}
+
+.rhine-history .recharts-tooltip-wrapper {
+  z-index: 2;
+}
+
+.rhine-latency-hit-area {
+  touch-action: pan-y;
+}
+
+.rhine-latency-hit-area:focus-visible {
+  outline: 1px solid var(--color-chart-1);
+  outline-offset: -1px;
+}
+
+.rhine-latency-tooltip {
+  position: absolute;
+  z-index: 3;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 0.45rem 0.6rem;
+  border: 1px solid var(--color-border);
+  background: var(--color-background);
+  color: var(--color-foreground);
+  font-size: 0.7rem;
+  line-height: 1.4;
+  font-variant-numeric: tabular-nums;
+}
+
+.rhine-latency-tooltip-time {
+  margin-bottom: 0.35rem;
+}
+
+.rhine-latency-tooltip-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1.1fr);
+  align-items: start;
+  gap: 0.4rem;
+  margin-top: 0.15rem;
+}
+
+.rhine-latency-tooltip-row > span:first-child {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.rhine-latency-tooltip-row > span:last-child {
+  overflow-wrap: anywhere;
+}
+
+.rhine-latency-tooltip-row time,
+.rhine-latency-tooltip-row small {
+  color: var(--color-muted-foreground);
+}
+
+.rhine-latency-tooltip-row small {
+  display: block;
+  font-size: inherit;
+}
+
+@media (max-width: 600px) {
+  .rhine-history-toolbar,
+  .rhine-history-meta {
+    gap: 0.6rem;
+  }
+
+  .rhine-range button,
+  .rhine-history-refresh {
+    min-height: 2.25rem;
+  }
+
+  .rhine-history-plot {
+    height: 10rem;
+  }
+
+  .rhine-history-plot.is-latency {
+    height: 17rem;
+  }
+
+  .rhine-history-meta {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .rhine-history-panels {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .rhine-probe-legend {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
