@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1100" fill="none">
+  <defs>
+    <pattern id="grid" width="88" height="88" patternUnits="userSpaceOnUse">
+      <path d="M88 0H0V88M0 0L88 88M88 0L0 88" stroke="#898878" stroke-opacity=".13" stroke-width=".7"/>
+      <path d="M40 44H48M44 40V48" stroke="#8b7960" stroke-opacity=".23" stroke-width=".8"/>
+    </pattern>
+    <linearGradient id="facade" x1="0" y1="300" x2="780" y2="710" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#d0c9b7" stop-opacity=".72"/>
+      <stop offset="1" stop-color="#d0c9b7" stop-opacity=".08"/>
+    </linearGradient>
+    <linearGradient id="paper" x1="0" y1="260" x2="670" y2="840" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#faf8f0" stop-opacity=".88"/>
+      <stop offset="1" stop-color="#faf8f0" stop-opacity=".14"/>
+    </linearGradient>
+    <linearGradient id="edge" x1="1130" y1="0" x2="1600" y2="400" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#c9c5b4" stop-opacity="0"/>
+      <stop offset="1" stop-color="#c9c5b4" stop-opacity=".4"/>
+    </linearGradient>
+  </defs>
+  <!-- Original architectural contours; no source artwork is embedded. -->
+  <path d="M1000 0H1600V430C1450 393 1388 281 1330 160C1285 66 1137 18 1000 0Z" fill="url(#edge)"/>
+  <path d="M1120 0H1600V316C1460 262 1458 98 1284 0Z" fill="url(#grid)"/>
+  <g stroke="#9e9782" stroke-opacity=".23" stroke-width="1">
+    <path d="M1026 -28C1295 5 1313 157 1410 279C1483 372 1571 415 1650 428"/>
+    <path d="M1090 -28C1347 12 1362 158 1457 268C1524 347 1591 378 1650 390"/>
+    <path d="M1154 -28C1394 15 1411 150 1503 257C1564 328 1610 341 1650 352"/>
+    <path d="M1218 -28C1438 18 1461 146 1549 246C1600 303 1632 312 1650 314"/>
+  </g>
+  <path d="M-180 252C65 168 271 230 393 365C515 499 553 675 760 795C855 851 969 880 1090 889C738 943 457 907 226 782C10 664 -112 464 -180 252Z" fill="url(#facade)"/>
+  <path d="M-180 271C56 201 254 259 374 390C503 532 544 700 741 808C561 749 427 654 316 538C141 355 -4 306 -180 342Z" fill="url(#paper)"/>
+  <path d="M-180 370C16 315 167 371 300 507C432 642 514 755 710 843C504 792 364 693 236 576C84 436 -54 415 -180 453Z" fill="url(#paper)"/>
+  <path d="M-180 481C-21 428 109 472 230 584C369 714 487 817 687 880C480 846 314 755 166 637C41 537 -70 541 -180 574Z" fill="url(#paper)"/>
+  <g stroke="#a59d86" stroke-width="1">
+    <path d="M-140 258C84 194 267 269 382 402C498 536 558 733 786 828" stroke-opacity=".35"/>
+    <path d="M-140 364C47 322 188 398 306 525C426 653 536 798 763 869" stroke-opacity=".28"/>
+    <path d="M-140 477C6 443 137 509 244 615C372 743 501 844 727 908" stroke-opacity=".24"/>
+  </g>
+  <path d="M0 630C171 620 290 739 369 820L463 970H0Z" fill="url(#grid)"/>
+  <path d="M0 806H277M0 814H286M0 832H306" stroke="#a36943" stroke-opacity=".24"/>
+  <path d="M25 775V789M18 782H32M428 905V919M421 912H435" stroke="#8c8269" stroke-opacity=".45"/>
+  <path d="M1326 1063C1402 968 1466 923 1600 914M1361 1100C1439 1001 1489 965 1600 953M1422 1100C1487 1038 1528 1009 1600 1001" stroke="#9e9782" stroke-opacity=".2"/>
+  <path d="M1462 1100L1600 967V1100Z" fill="url(#grid)"/>
+</svg>

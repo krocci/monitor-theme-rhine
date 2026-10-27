@@ -36,11 +36,11 @@ Review and commit the source changes. Create and push a tag matching
 `theme.json`, then publish the checked archive with GitHub CLI:
 
 ```sh
-git tag v0.1.5
+git tag -a v0.1.6 -m "Rhine Observation v0.1.6"
 git push origin main
-git push origin v0.1.5
-gh release create v0.1.5 theme.tar.gz theme.tar.gz.sha256 \
-  --verify-tag --title "Rhine Observation v0.1.5" --notes-file release-notes.md
+git push origin v0.1.6
+gh release create v0.1.6 theme.tar.gz theme.tar.gz.sha256 \
+  --verify-tag --title "Rhine Observation v0.1.6" --notes-file release-notes.md
 ```
 
 Use `theme.tar.gz` and its checksum as release assets. GitHub's automatically

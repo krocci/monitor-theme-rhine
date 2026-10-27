@@ -1,4 +1,4 @@
-import { memo, useEffect, useId, useMemo, useState } from "react"
+import { memo, useEffect, useId, useMemo, useRef, useState } from "react"
 import { createPortal } from "react-dom"
 import {
   Area, AreaChart, Brush, CartesianGrid, ComposedChart, Line, ResponsiveContainer,
@@ -15,6 +15,7 @@ import {
   type PingPoint, type PingSeries,
 } from "@/lib/history"
 import "./history.css"
+import { useDocumentReveal } from "./useDocumentReveal"
 
 type Point = {
   ts: number
@@ -42,7 +43,7 @@ type Loss = Record<string, number>
 
 type HistoryData = { metrics: Point[]; ping: PingPoint[]; probes: Probes; loss?: Loss }
 type HistoryMode = "resources" | "latency"
-type HistoryProps = { node: Node; historyDays: number; mode: HistoryMode }
+type HistoryProps = { node: Node; historyDays: number; mode: HistoryMode; reduceMotion: boolean }
 type ProbeHistory = {
   id: number
   name: string
@@ -431,15 +432,18 @@ function RangeButton({ active, onClick, children }: {
  * point is a bucket -- its median, the range its answers spanned and the share
  * lost -- which over a month shows a route's evening pattern a day cannot.
  */
-export const NodeHistory = memo(function NodeHistory({ node, historyDays, mode }: HistoryProps) {
+export const NodeHistory = memo(function NodeHistory({ node, historyDays, mode, reduceMotion }: HistoryProps) {
   const ranges = useMemo(() => windows(historyDays), [historyDays])
   const [picked, setPicked] = useState({ resources: 6, latency: 6 })
   const hours = ranges.some((r) => r.hours === picked[mode]) ? picked[mode] : ranges[0].hours
   const [attempt, setAttempt] = useState(0)
+  const revealRef = useRef<HTMLElement>(null)
+  useDocumentReveal(revealRef, `${node.id}:${mode}`, reduceMotion)
 
   return (
-    <section className="rhine-history" aria-label={mode === "latency" ? "网络探测历史" : "资源历史"}>
+    <section className="rhine-history" aria-label={mode === "latency" ? "网络探测历史" : "资源历史"} ref={revealRef}>
       <div className="rhine-history-toolbar">
+        <h2 className="history-section-title" data-document-reveal>{mode === "latency" ? "NETWORK / 网络探测" : "RESOURCE / 资源趋势"}</h2>
         <div className="rhine-range" role="group" aria-label="历史时间范围">
           {ranges.map((r) => (
             <RangeButton
@@ -471,7 +475,8 @@ export const NodeHistory = memo(function NodeHistory({ node, historyDays, mode }
   && previous.node.mem_total === next.node.mem_total
   && previous.node.disk_total === next.node.disk_total
   && previous.historyDays === next.historyDays
-  && previous.mode === next.mode)
+  && previous.mode === next.mode
+  && previous.reduceMotion === next.reduceMotion)
 
 function HistoryWindow({ node, mode, hours, onRetry }: {
   node: Node

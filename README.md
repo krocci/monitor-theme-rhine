@@ -4,21 +4,21 @@
 
 **[在线演示](https://rhine-observation-demo.yahad.workers.dev)** · 全部节点和曲线均为合成数据，无需登录。演示站保留简报、索引、详情与密集网络历史；[演示部署说明](docs/DEMO.md)介绍本地运行和 Cloudflare Workers 部署方式。
 
-![0.1.5 合成数据演示](docs/images/rhine-0.1.5.jpg)
+![0.1.6 合成数据演示](docs/images/rhine-0.1.6.png)
 
 ## 特点
 
 - 节点简报采用档案卡片布局，名称、状态和分组置顶；方环展示 CPU、内存与磁盘，卡片底部显示上下行速率，右侧展示最近一小时的简略资源趋势。
 - 支持滚轮连续切换、键盘导航和可暂停的自动轮播；历史趋势仅请求当前节点，切换时取消旧请求并复用短时缓存。
 - 节点索引支持名称搜索、分组、状态、关注筛选和排序；普通索引入口重置筛选，从详情返回则保留列表上下文。
-- 紧凑的节点详情包含实时资源、资源趋势和网络探测。
+- 紧凑的节点详情包含实时资源、资源趋势和网络探测，采用统一档案面板与短暂的文字黑条揭示。
 - 多条探测曲线以实线同图叠加，支持图例显隐和共享时间缩放；保留超时、断档与服务端窗口丢包信息。
 - 站点标题直接读取 Monitor 的站点名称；提供窄屏布局和减少动态效果选项。
-- 使用 CSS 与 SVG 实现二维效果，无 3D 引擎、音频或远程字体。
+- 使用 CSS 与 SVG 实现静态建筑弧带、工程网格和二维效果，无 3D 引擎、音频或远程字体。
 
-当前版本为 **Rhine Observation 0.1.5**，已在 **Monitor hub 1.5.1** 上完成部署与浏览器回归；此前 1.5.0 的兼容记录按历史版本保留。这是前台主题，后台管理仍使用 Monitor 自带界面。预览图和本地测试数据均为合成数据。
+当前版本为 **Rhine Observation 0.1.6**，已在 **Monitor hub 1.5.1** 上完成部署与浏览器回归；此前版本的兼容记录按历史日期保留。这是前台主题，后台管理仍使用 Monitor 自带界面。预览图和本地测试数据均为合成数据。
 
-方环卡片、首页简略趋势和索引筛选修正已同步到生产主题与公开演示，验证范围见 [0.1.5 发布记录](docs/RELEASE-0.1.5.md)。
+静态建筑背景、详情面板与文字揭示已同步到生产主题和公开演示。揭示约一秒内结束，不随实时刷新重播，并尊重减少动态效果；验证范围见 [0.1.6 发布记录](docs/RELEASE-0.1.6.md)。
 
 ## 安装
 
@@ -103,6 +103,8 @@ node scripts/benchmark-history.mjs
 本项目以 [monitor-probe/monitor-theme-default](https://github.com/monitor-probe/monitor-theme-default) `v1.4.1` 为基础，来源提交为 `4493b5f3bbfd9ef94675de0b2e11681d865a1428`，保留 stqfdyr 的 MIT 版权与许可证。
 
 视觉方向参考 [LBEILC/RhineLabUI](https://github.com/LBEILC/RhineLabUI)。本仓库未包含其截图、标志、模型、字体、音频或其他素材，也不表示与相关项目或权利人存在隶属或授权关系。
+
+详情页的文字黑条揭示动画参考并改写其 `src/document-decryption.ts` 的逐行遮罩实现，保留 LBEILC 的 MIT 版权与许可证；使用独立 DOM 动画，不引入原项目的三维时间线。设计与本地验证见 [详情页细化记录](docs/DETAIL-REFINEMENT.md)。
 
 完整许可见 [LICENSE](LICENSE)，来源说明见 [NOTICE](NOTICE)，维护者发布流程见 [RELEASING.md](RELEASING.md)。
 

@@ -8,6 +8,7 @@ import { NodeIndex, type IndexFilters } from "./components/NodeIndex"
 import { useBriefingCarousel } from "./components/useBriefingCarousel"
 import { ROTATION_MS } from "./lib/carousel"
 import { BriefingTrends } from "./components/BriefingTrends"
+import { useDocumentReveal } from "./components/useDocumentReveal"
 
 const NodeHistory = lazy(() => import("./components/NodeDetail").then((module) => ({ default: module.NodeHistory })))
 type Site = { site_name: string; authed: boolean; public_page: boolean; history_days: number }
@@ -102,6 +103,8 @@ function Dashboard({ site, configError, onRevalidate }: { site: Site; configErro
   const settingsRef = useRef<HTMLDialogElement>(null)
   const headingRef = useRef<HTMLHeadingElement>(null)
   const briefingRef = useRef<HTMLElement>(null)
+  const identityRef = useRef<HTMLElement>(null)
+  const overviewRef = useRef<HTMLElement>(null)
   const nodeId = Number(/^\/node\/(\d+)\/?$/.exec(route.path)?.[1]) || null
   const selected = nodes?.find((node) => node.id === (nodeId ?? selectedId))
   const stale = connection === "stale" || connection === "paused"
@@ -109,6 +112,8 @@ function Dashboard({ site, configError, onRevalidate }: { site: Site; configErro
   const visibleNodes = (nodes ?? []).filter((node) => group === null || (node.group ?? "") === group)
   const position = visibleNodes.findIndex((node) => node.id === selectedId)
   const detail = Boolean(nodeId)
+  useDocumentReveal(identityRef, detail && selected ? String(selected.id) : null, reduceMotion)
+  useDocumentReveal(overviewRef, detail && selected && tab === "overview" ? String(selected.id) : null, reduceMotion)
 
   useEffect(() => {
     const pop = () => setRoute(readRoute())
@@ -289,15 +294,15 @@ function Dashboard({ site, configError, onRevalidate }: { site: Site; configErro
             </div>
             {!selected ? <div className="empty-state"><h1>节点当前不可用</h1><p>节点可能已删除、被隐藏，或不在当前访问权限范围内。</p><button className="text-link" onClick={() => openIndex()}>查看节点索引 <ArrowRight size={18} /></button></div>
               : <>
-                <header className="detail-identity">
+                <header className="detail-identity" ref={identityRef}>
                   <div className="detail-title">
-                    <div className="file-label"><span className="eyebrow">NODE FILE / {selected.group || "未分组"}</span></div>
-                    <h1 className="node-heading" ref={headingRef} tabIndex={-1}>{selected.name}</h1>
+                    <div className="file-label"><span className="file-label-kind">NODE FILE</span><span className="file-label-group">{selected.group || "未分组"}</span></div>
+                    <h1 className="node-heading" ref={headingRef} tabIndex={-1} data-document-reveal>{selected.name}</h1>
                     <div className="detail-subtitle"><NodeStatus node={selected} stale={stale} /><span>{selected.os || "系统信息待上报"}</span></div>
                   </div>
                   <dl className="detail-facts">
-                      <div><dt>PROCESSOR / 处理器</dt><dd>{selected.cpu_name || "--"}</dd></div>
-                      <div><dt>ARCHITECTURE / 架构</dt><dd>{selected.arch || "--"}{selected.cpu_cores > 0 ? ` / ${selected.cpu_cores} 核` : ""}</dd></div>
+                      <div><dt>PROCESSOR / 处理器</dt><dd data-document-reveal>{selected.cpu_name || "--"}</dd></div>
+                      <div><dt>ARCHITECTURE / 架构</dt><dd data-document-reveal>{selected.arch || "--"}{selected.cpu_cores > 0 ? ` / ${selected.cpu_cores} 核` : ""}</dd></div>
                       <div><dt>UPTIME / 运行时长</dt><dd>{metric(selected.metrics?.uptime, uptime)}</dd></div>
                       <div><dt>LAST REPORT / 最近上报</dt><dd>{selected.last_seen > 0 ? stamp(selected.last_seen * 1000, true) : "--"}</dd></div>
                   </dl>
@@ -317,16 +322,16 @@ function Dashboard({ site, configError, onRevalidate }: { site: Site; configErro
                       <span>DISK <b>{percentLabel(displayPercent(selected, "disk"))}</b></span>
                     </div>}
                 </div>
-                {tab === "overview" ? <section className="detail-layout" id="panel-overview" role="tabpanel" aria-labelledby="tab-overview">
+                {tab === "overview" ? <section className="detail-layout" id="panel-overview" role="tabpanel" aria-labelledby="tab-overview" ref={overviewRef}>
                     <InstrumentPlate node={selected} />
                     <div className="overview-body">
-                      <div className="eyebrow">NETWORK / 实时传输</div>
+                      <div className="overview-head"><h2 data-document-reveal>NETWORK / 网络传输</h2><span>TRAFFIC OBSERVATION</span></div>
                       <div className="detail-rates"><MetricReadout label="上行 / UPLOAD" value={metric(selected.metrics?.net_tx, rate)} icon={<ArrowUp size={18} />} /><MetricReadout label="下行 / DOWNLOAD" value={metric(selected.metrics?.net_rx, rate)} icon={<ArrowDown size={18} />} /></div>
                       <dl className="secondary-facts"><div><dt>本月上行</dt><dd>{metric(selected.month_tx, bytes)}</dd></div><div><dt>本月下行</dt><dd>{metric(selected.month_rx, bytes)}</dd></div><div><dt>内核</dt><dd>{selected.kernel || "--"}</dd></div><div><dt>Agent</dt><dd>{selected.agent_version || "--"}</dd></div></dl>
                       <SnapshotNote node={selected} stale={stale} receivedAt={receivedAt} />
                     </div>
                   </section>
-                  : <section className="history-region" id={`panel-${tab}`} role="tabpanel" aria-labelledby={`tab-${tab}`}><Suspense fallback={<p className="notice">正在载入历史视图...</p>}><NodeHistory key={`${selected.id}-${tab}`} node={selected} historyDays={site.history_days} mode={tab} /></Suspense></section>}
+                  : <section className="history-region" id={`panel-${tab}`} role="tabpanel" aria-labelledby={`tab-${tab}`}><Suspense fallback={<p className="notice">正在载入历史视图...</p>}><NodeHistory key={`${selected.id}-${tab}`} node={selected} historyDays={site.history_days} mode={tab} reduceMotion={reduceMotion} /></Suspense></section>}
               </>}
           </article> : <section className="briefing" data-testid="briefing" ref={briefingRef}
             onFocusCapture={carousel.onFocusCapture} onBlurCapture={carousel.onBlurCapture}

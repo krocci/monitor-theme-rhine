@@ -12,3 +12,8 @@ assets are not included. No affiliation or endorsement is claimed.
 This release contains an independent two-dimensional interface, plus
 adaptations of the default theme's API, formatting and history components.
 No remote fonts, service workers, audio or 3D runtime are used.
+
+The document reveal animation adapts the text-line redaction approach from
+LBEILC/RhineLabUI (src/document-decryption.ts), Copyright (c) 2026 LBEILC.
+Its MIT license is reproduced in LICENSE. The adaptation uses bounded DOM
+measurement and browser animations without the reference's 3D timeline.

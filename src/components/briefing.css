@@ -68,7 +68,8 @@
   .briefing .brief-content { grid-row: 2; padding-top: 18px; }
   .archive-stage .archive-caption { flex-direction: row; }
   .archive-stage .archive-sheet { width: 62%; max-width: 400px; height: 400px; padding: 22px; left: calc(19% + (var(--sheet-index) - var(--sheet-middle)) * 5%); }
-  .archive-stage .archive-sheets { min-height: 475px; }
+  /* Leave room for the rotated back sheets before the stacked briefing text. */
+  .archive-stage .archive-sheets { min-height: 590px; }
   .archive-stage .sheet-name { font-size: 27px; }
   .sheet-resource-values strong { font-size: 23px; }
   .sheet-network strong { font-size: 15px; }

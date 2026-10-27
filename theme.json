@@ -2,7 +2,7 @@
   "name": "Rhine Observation",
   "short": "rhine",
   "description": "纸色档案式二维观测主题：节点简报、索引与详情；站点标题沿用 Monitor 配置。",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "author": "Monitor Rhine Theme contributors; based on stqfdyr's default theme",
   "url": "https://github.com/krocci/monitor-theme-rhine",
   "config": []

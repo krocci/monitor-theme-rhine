@@ -220,7 +220,7 @@ export function InstrumentPlate({ node, compact = false }: { node: Node; compact
   return (
     <section className={`instrument-plate${compact ? " is-compact" : ""}`} aria-label="节点资源仪表">
       <div className="plate-head">
-        <span className="plate-serial">RESOURCE / 资源</span>
+        <span className="plate-serial" data-document-reveal>RESOURCE / 资源</span>
         <span className="plate-kind">RESOURCE OBSERVATION</span>
       </div>
       <div className="plate-rings">
