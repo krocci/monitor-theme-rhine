@@ -106,6 +106,8 @@ node scripts/benchmark-history.mjs
 
 完整许可见 [LICENSE](LICENSE)，来源说明见 [NOTICE](NOTICE)，维护者发布流程见 [RELEASING.md](RELEASING.md)。
 
+后续视觉研究使用本机莱茵生命公开素材参考库；公开来源、收录范围与使用边界见 [素材说明](docs/MATERIALS.md)。第三方原图与图册仅保存在被 Git 忽略的 `local/`，不随主题发布。
+
 ## 项目维护
 
 项目背景、固定基线和验证边界见 [项目说明](docs/PROJECT.md)，已确认的交互与展示约定见 [设计决定](docs/DECISIONS.md)，未完成事项集中在 [后续计划](docs/ROADMAP.md)。协作约定见 [AGENTS.md](AGENTS.md)。
